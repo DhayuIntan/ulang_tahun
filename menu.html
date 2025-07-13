@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystery Menu</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            width: 150px;
+            height: 200px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            padding: 10px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .card-back {
+            background: rgba(0, 0, 0, 0.7);
+            transform: rotateY(180deg);
+            font-weight: normal;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="fireworks"></canvas>
+
+    <div class="stars"></div>
+
+    <h1>Pilih salah satu, untuk claim menu spesial ulang tahun</h1>
+
+    <div class="container" id="cardContainer"></div>
+
+    <div id="congrats" style="
+        display: none; 
+        color: white; 
+        margin-top: 40px; 
+        font-size: 1.2rem; 
+        max-width: 600px; 
+        text-align: center; 
+        padding: 20px; 
+        background: rgba(255,255,255,0.1); 
+        border-radius: 15px;
+        line-height: 1.8;
+        opacity: 0;
+        transition: opacity 1s;">
+        Selamat! Mas Zaqi sudah mendapatkan menu spesial hari ini.<br>
+        Screenshoot halaman ini lalu kasih ke wa intan ya, untuk claim di warung Arjosari ~ 🍽️✨
+    </div>
+
+    <script>
+        // Bintang-bintang
+        const starsContainer = document.querySelector('.stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Data menu
+        const menus = [
+            "Rawon",
+            "Kari ayam",
+            "Cah kangkung dan ayam goreng",
+            "Soto ayam"
+        ];
+
+        // Generate card
+        const container = document.getElementById('cardContainer');
+        let isLocked = false;
+
+        menus.forEach(menu => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+
+            card.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front">???</div>
+                    <div class="card-back">${menu}</div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                if (!isLocked) {
+                    card.classList.add('flipped');
+                    isLocked = true;
+
+                    document.querySelectorAll('.card').forEach(c => {
+                        if (c !== card) {
+                            c.style.pointerEvents = 'none';
+                            c.style.opacity = '0.5';
+                        }
+                    });
+
+                    startFireworks();
+
+                    // Tampilkan ucapan selamat
+                    const congrats = document.getElementById('congrats');
+                    congrats.style.display = 'block';
+                    setTimeout(() => {
+                        congrats.style.opacity = 1;
+                    }, 300);
+                }
+            });
+            container.appendChild(card);
+        });
+
+        // Kembang api sederhana
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+
+        window.addEventListener('resize', () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+
+        const particles = [];
+
+        function createFirework(x, y) {
+            const colors = ['#ff4b5c', '#fddb3a', '#3ae374', '#17c0eb', '#ff9f1a'];
+            for (let i = 0; i < 30; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    angle: Math.random() * Math.PI * 2,
+                    speed: Math.random() * 4 + 2,
+                    radius: Math.random() * 2 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1
+                });
+            }
+        }
+
+        function updateFireworks() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p, index) => {
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed;
+                p.alpha -= 0.02;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.fill();
+                if (p.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+            ctx.globalAlpha = 1;
+            requestAnimationFrame(updateFireworks);
+        }
+
+        function startFireworks() {
+            setInterval(() => {
+                const x = Math.random() * width;
+                const y = Math.random() * height / 2;
+                createFirework(x, y);
+            }, 500);
+
+            updateFireworks();
+        }
+    </script>
+
+</body>
+
+</html>

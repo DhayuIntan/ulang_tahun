@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ucapan Selamat Ulang Tahun</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+        #message {
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .card {
+        background: rgba(255, 255, 255, 0.233);
+        color: #ffffff;
+        padding: 30px 40px;
+        border-radius: 20px;
+        max-width: 600px;
+        width: 90%;
+        height: 400px; /* Ukuran tetap */
+        overflow-y: auto; /* Scroll saat konten melebihi tinggi */
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        text-align: justify;
+        font-size: 1.3rem;
+        line-height: 1.8;
+        backdrop-filter: blur(5px);
+        }
+
+        .btn {
+            display: none;
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            background: #00c6ff;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #0072ff;
+        }
+
+        .typing {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="stars"></div>
+
+    <div class="card">
+        <div id="message"></div>
+        <button class="btn" onclick="window.location.href='menu.html'">Klik untuk claim menu spesial ulang tahun</button>
+    </div>
+
+    <script>
+        // Buat bintang-bintang
+        const starsContainer = document.querySelector('.stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Efek mengetik per huruf
+        const text = `Selamat ulang tahun Masku tersayangg
+
+Semoga mas selalu diberi kesehatan, umur yang barokah, rezeki yang baik, dipermudah mencapai cita-cita yang diinginkan, dan selalu dikelilingi dengan kebaikan.
+
+Kalau bisa dikurang-kurangin yaa ngusilinnya, diperbanyak manis manisnya aja😆 maafin ya mas intan juga suka kadang-kadang ganggguin klo lagi kangen mas zaqi wkwk, sabar sabar yaa mas. 
+
+Intan bangga sama perjalanan yang udah dilalui mas zaqi dari awal kita dulu sampai sekarang ini, semakin baik hari ke hari, mas zaqi orang yang kuat dan hebat 
+
+Terima kasih sudah menjadi sosok istimwa yang mewarnai hidup intan. Semoga kita diberi kesempatan oleh Allah untuk terus bersama yaa mas, love you 🤍`;
+
+        const messageEl = document.getElementById('message');
+        const btn = document.querySelector('.btn');
+        let i = 0;
+
+            function typeWriter() {
+                    if (i < text.length) {
+                        messageEl.innerHTML += text.charAt(i);
+                        i++;
+                        messageEl.scrollTop = messageEl.scrollHeight; // Auto-scroll saat mengetik
+                        setTimeout(typeWriter, 50);
+                    } else {
+                        btn.style.display = 'inline-block';
+                    }
+                }
+
+            typeWriter();
+    </script>
+
+</body>
+
+</html>
